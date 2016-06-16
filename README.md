@@ -6,5 +6,4 @@ Go언어를 공부한 코드를 정리
 + osx 10.10
 + go version go1.6.1 darwin/amd64
 + atom edit
-
- 
++ atom go-plus https://github.com/joefitzgerald/go-plus
