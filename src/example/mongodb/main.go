@@ -1,53 +1,48 @@
 package main
 
 import (
-  "fmt"
-  "gopkg.in/mgo.v2"
-  _ "reflect"
+	"fmt"
+
+	"gopkg.in/mgo.v2"
 )
 
-// mongo db setting
-type MongoConf struct {
-  dbpath string
+// MstArea master area data structure
+type MstArea struct {
+	ID     int    `json:"id" bson:"_id"`
+	AreaID int    `json:"areaId" bson:"areaId"`
+	Name   string `json:"name" bson:"name"`
 }
 
-// mongodb model
-type Mst_area struct {
-    areaId int
-    chara string
-    icon string
-    name string
-    open int
-    rank int
-    sx int
-    sy int
-    tex string
-    timestamp int64
-    worldId string
-    xpos string
-    ypos string
-}
+// GetSession connection mongodb
+func GetSession() *mgo.Session {
+	mongoPath := "mongodb://localhost"
+	s, err := mgo.Dial(mongoPath)
 
-// mongodb connection initialize
-func (mgo *MongoConf) InitialMgo()  {
-  mgo.dbpath = "mongodb://localhost"
-}
-
-// mongo connection
-func GetSession()  *mgo.Session {
-  mgodb := new(MongoConf)
-  mgodb.InitialMgo()
-
-  session, err := mgo.Dial(mgodb.dbpath)
-  if err != nil {
-    fmt.Println(err.Error())
-  }
-  return session
+	if err != nil {
+		fmt.Println(err.Error())
+	}
+	return s
 }
 
 func main() {
-  fmt.Println("==== [mongodb connect] ====")
-  conn := GetSession()
-  c := conn.DB("CHRODB2").C("mst_place")
-  fmt.Println(c)
+	fmt.Println("##########[start]###########")
+	s := GetSession()
+	defer s.Close()
+
+	conn := s.DB("CHRODB2_KOR").C("mst_area")
+	// oid := bson.ObjectIdHex("5774903a807d572c6ea8632b")
+
+	// results := MstArea{}
+	var results []MstArea
+	err := conn.Find(nil).All(&results)
+	// err := conn.FindId(oid).One(&results)
+	if err != nil {
+		fmt.Println(err.Error())
+		return
+	}
+
+	for _, v := range results {
+		fmt.Println(v)
+	}
+
 }
